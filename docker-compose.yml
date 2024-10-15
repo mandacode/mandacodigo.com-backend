@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: fastapi
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./app/:/var/www/app"
+    env_file:
+      - .env
+    command: bash -c "wait-for-it --service db:5432 --timeout=15 -- uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  db:
+    container_name: postgres
+    image: postgres:15
+    environment:
+      POSTGRES_USER: mandacodigo
+      POSTGRES_PASSWORD: mandacodigo
+      POSTGRES_DB: mandacodigo
+    ports:
+      - "5432:5432"
