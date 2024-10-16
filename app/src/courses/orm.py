@@ -3,23 +3,15 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    Float,
     ForeignKey,
     DateTime,
     func
 )
 from sqlalchemy.orm import relationship
 
-from ..database import metadata, mapper_registry
 from . import model
-
-videos = Table(
-    "videos",
-    metadata,
-    Column("id", Integer, autoincrement=True, primary_key=True),
-    Column("url", String(500)),
-    Column("duration", Float)
-)
+from ..database import metadata, mapper_registry
+from ..files.model import File
 
 lessons = Table(
     "lessons",
@@ -27,7 +19,7 @@ lessons = Table(
     Column("id", Integer, autoincrement=True, primary_key=True),
     Column("title", String(120)),
     Column("description", String(500)),
-    Column("video_id", Integer, ForeignKey("videos.id")),
+    Column("video_id", Integer, ForeignKey("files.id")),
     Column("module_id", Integer, ForeignKey("modules.id")),
 )
 
@@ -60,11 +52,10 @@ enrollments = Table(
 
 
 def start_mappers():
-    mapper_registry.map_imperatively(model.Video, videos)
     mapper_registry.map_imperatively(
         model.Lesson, lessons, properties={
             'video': relationship(
-                model.Video, backref='lesson', uselist=False
+                File, backref='lesson', uselist=False
             )
         }
     )

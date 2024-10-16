@@ -4,26 +4,26 @@ from fastapi.responses import JSONResponse
 from .service import RegistrationService, AuthenticationService
 from .error import PasswordNotMatch, UserNotExists, InvalidPassword
 from .repository import SqlAlchemyUserRepository
-from .dto import UserDTO, RegisterUserDTO, LoginDTO
+from .dto import UserDTO, CreateUserDTO, LoginDTO, TokenDTO
 from ..database import get_session
 
 router = APIRouter(prefix="/users")
 
 
 @router.post(
-    "/register",
+    "/",
     response_model=UserDTO,
     status_code=status.HTTP_201_CREATED
 )
-def registration_controller(
-        dto: RegisterUserDTO,
+def create_user_controller(
+        dto: CreateUserDTO,
         session=Depends(get_session),
-):
+) -> UserDTO:
     repo = SqlAlchemyUserRepository(session=session)
-    register_service = RegistrationService(repo=repo)
+    service = RegistrationService(repo=repo)
 
     try:
-        user = register_service.execute(
+        user = service.execute(
             username=dto.username,
             password=dto.password,
             repeat_password=dto.repeat_password,
@@ -35,19 +35,19 @@ def registration_controller(
             status_code=status.HTTP_400_BAD_REQUEST, detail=error.message
         )
 
-    return user
+    return UserDTO.from_orm(user)
 
 
-@router.post("/login")
+@router.post("/login", response_model=TokenDTO, status_code=status.HTTP_200_OK)
 def login_controller(
         dto: LoginDTO,
         session=Depends(get_session),
-) -> JSONResponse:
+) -> TokenDTO:
     repo = SqlAlchemyUserRepository(session=session)
-    login_service = AuthenticationService(repo=repo)
+    service = AuthenticationService(repo=repo)
 
     try:
-        data = login_service.execute(
+        token = service.execute(
             username=dto.username,
             password=dto.password,
         )
@@ -58,4 +58,4 @@ def login_controller(
             detail="Incorrect username or password"
         )
 
-    return JSONResponse(content=data, status_code=status.HTTP_200_OK)
+    return TokenDTO.from_orm(token)

@@ -61,11 +61,13 @@ class CreateModuleService:
     def __init__(self, db):
         self.db = db
 
-    def execute(self, title: str, course_id: int):
+    def execute(self, title: str, course_id: int) -> model.Module:
         module = model.Module(title=title, course_id=course_id)
 
         self.db.add(module)
-        self.db.comit()
+        self.db.commit()
+
+        return module
 
 
 class EnrollService:

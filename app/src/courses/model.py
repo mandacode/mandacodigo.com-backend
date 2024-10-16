@@ -12,12 +12,6 @@ class Lesson:
 
 
 @dataclasses.dataclass
-class Video:
-    url: str
-    duration: float
-
-
-@dataclasses.dataclass
 class Module:
     title: str
     course_id: int
