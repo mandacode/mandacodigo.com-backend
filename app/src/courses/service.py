@@ -2,11 +2,12 @@ from .model import enroll_course
 
 from . import model
 from .. import config
+from ..database import DatabaseSession
 
 
 class CreateCourseService:
 
-    def __init__(self, db):
+    def __init__(self, db: DatabaseSession):
         self.db = db
 
     def execute(
@@ -26,21 +27,9 @@ class CreateCourseService:
         return course
 
 
-class CreateVideoService:
-
-    def __init__(self, db):
-        self.db = db
-
-    def execute(self, url: str, duration: float):
-        video = model.Video(url=url, duration=duration)
-
-        self.db.add(video)
-        self.db.commit()
-
-
 class CreateLessonService:
 
-    def __init__(self, db):
+    def __init__(self, db: DatabaseSession):
         self.db = db
 
     def execute(
@@ -60,7 +49,7 @@ class CreateLessonService:
 
 class CreateModuleService:
 
-    def __init__(self, db):
+    def __init__(self, db: DatabaseSession):
         self.db = db
 
     def execute(self, title: str, course_id: int) -> model.Module:
@@ -74,7 +63,7 @@ class CreateModuleService:
 
 class EnrollService:
 
-    def __init__(self, db):
+    def __init__(self, db: DatabaseSession):
         self.db = db
 
     def execute(self, student_id: int, course_id: int):
@@ -88,7 +77,7 @@ class EnrollService:
 
 class GetCourseService:
 
-    def __init__(self, db):
+    def __init__(self, db: DatabaseSession):
         self.db = db
 
     def execute(self, course_id: int) -> model.Course:
@@ -103,7 +92,7 @@ class GetCourseService:
 
 class GetLessonService:
 
-    def __init__(self, db):
+    def __init__(self, db: DatabaseSession):
         self.db = db
 
     def execute(self, lesson_id: int) -> model.Lesson:

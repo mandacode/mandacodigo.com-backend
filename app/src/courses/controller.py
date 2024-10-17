@@ -103,3 +103,10 @@ def get_course_controller(
     service = GetLessonService(db=session)
     course = service.execute(lesson_id=lesson_id)
     return course
+
+
+# TODO add enrollment
+# TODO add user profile
+# TODO add security
+# TODO add ability to delete file, lesson, module, course (delete course removes all modules, lessons etc)
+

@@ -1,6 +1,21 @@
+from typing import Protocol
+
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy.orm import sessionmaker, registry
 from . import config
+
+
+class DatabaseSession(Protocol):
+
+    def add(self, obj: object):
+        ...
+
+    def commit(self):
+        ...
+
+    def query(self, obj: object):
+        ...
+
 
 metadata = MetaData()
 mapper_registry = registry()

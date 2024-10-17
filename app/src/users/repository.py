@@ -2,6 +2,7 @@ from typing import Protocol
 
 from . import model
 from .error import UserNotExists
+from ..database import DatabaseSession
 
 
 class UserRepositoryInterface(Protocol):
@@ -32,7 +33,7 @@ class MockUserRepository:
 
 class SqlAlchemyUserRepository:
 
-    def __init__(self, session):
+    def __init__(self, session: DatabaseSession):
         self.session = session
 
     def add(self, user: model.User):

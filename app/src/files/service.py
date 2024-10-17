@@ -6,6 +6,7 @@ from typing import BinaryIO
 from .aws import Boto3AWSClient
 from . import model
 from .. import config
+from ..database import DatabaseSession
 
 
 def generate_unique_filename(extension: str, length: int = 16) -> str:
@@ -16,13 +17,13 @@ def generate_unique_filename(extension: str, length: int = 16) -> str:
 
 class UploadFileService:
 
-    def __init__(self, db):
+    def __init__(
+            self,
+            db: DatabaseSession,
+            aws_client: Boto3AWSClient
+    ):
         self.db = db
-        self.aws_client: Boto3AWSClient = Boto3AWSClient(
-            aws_access_key=config.AWS_ACCESS_KEY,
-            aws_secret_key=config.AWS_SECRET_KEY,
-            region=config.AWS_DEFAULT_REGION
-        )
+        self.aws_client = aws_client
 
     def execute(self, file: BinaryIO, extension: str) -> model.File:
         today = datetime.datetime.today()
