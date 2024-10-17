@@ -8,7 +8,7 @@ files = Table(
     metadata,
     Column("id", Integer, autoincrement=True, primary_key=True),
     Column("filename", String(100)),
-    Column("url", String(500)),
+    Column("path", String(500)),
     Column("uploaded_at", DateTime)
 )
 
