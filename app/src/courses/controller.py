@@ -1,9 +1,20 @@
 from fastapi import APIRouter, Depends
 from fastapi import status
 
-from .dto import CreateCourseDTO, CourseDTO, CreateModuleDTO, CreateLessonDTO
-from .service import CreateCourseService, CreateModuleService, \
-    CreateLessonService
+from .dto import (
+    CreateCourseDTO,
+    CourseDTO,
+    CreateModuleDTO,
+    CreateLessonDTO,
+    LessonDTO
+)
+from .service import (
+    CreateCourseService,
+    CreateModuleService,
+    CreateLessonService,
+    GetCourseService,
+    GetLessonService
+)
 from ..database import get_session, Session
 
 router = APIRouter(prefix="/courses")
@@ -55,7 +66,7 @@ def create_lesson_controller(
         dto: CreateLessonDTO,
         session: Session = Depends(get_session)
 ):
-    # use course_id for validation if module belongs to the course'
+    # use course_id for validation if module belongs to the course
     service = CreateLessonService(db=session)
     lesson = service.execute(
         title=dto.title,
@@ -66,5 +77,29 @@ def create_lesson_controller(
     return lesson
 
 
-# TODO Uploading files to S3 or just videos
-# Add introduction
+@router.get(
+    path="/{course_id}",
+    response_model=CourseDTO
+)
+def get_course_controller(
+        course_id: int,
+        session: Session = Depends(get_session)
+):
+    service = GetCourseService(db=session)
+    course = service.execute(course_id=course_id)
+    return course
+
+
+@router.get(
+    path="/{course_id}/modules/{module_id}/lessons/{lesson_id}",
+    response_model=LessonDTO
+)
+def get_course_controller(
+        course_id: int,
+        module_id: int,
+        lesson_id: int,
+        session: Session = Depends(get_session)
+):
+    service = GetLessonService(db=session)
+    course = service.execute(lesson_id=lesson_id)
+    return course

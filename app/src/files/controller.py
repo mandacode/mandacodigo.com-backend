@@ -12,7 +12,7 @@ router = APIRouter(prefix="/files")
 
 
 @router.post(
-    path="/",
+    path="/upload",
     response_model=FileDTO
 )
 def upload_file_controller(

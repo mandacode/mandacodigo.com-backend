@@ -1,6 +1,7 @@
 from .model import enroll_course
 
 from . import model
+from .. import config
 
 
 class CreateCourseService:
@@ -44,7 +45,7 @@ class CreateLessonService:
 
     def execute(
             self, title: str, description: str, video_id: int, module_id: int
-    ):
+    ) -> model.Lesson:
         lesson = model.Lesson(
             title=title,
             description=description,
@@ -54,6 +55,7 @@ class CreateLessonService:
 
         self.db.add(lesson)
         self.db.commit()
+        return lesson
 
 
 class CreateModuleService:
@@ -82,6 +84,46 @@ class EnrollService:
         enroll_course(student=student, course=course)
 
         self.db.commit()
+
+
+class GetCourseService:
+
+    def __init__(self, db):
+        self.db = db
+
+    def execute(self, course_id: int) -> model.Course:
+        course = (
+            self.db
+            .query(model.Course)
+            .filter_by(id=course_id)
+            .one_or_none()
+        )
+        return course
+
+
+class GetLessonService:
+
+    def __init__(self, db):
+        self.db = db
+
+    def execute(self, lesson_id: int) -> model.Lesson:
+        lesson = (
+            self.db
+            .query(model.Lesson)
+            .filter_by(id=lesson_id)
+            .one_or_none()
+        )
+
+        bucket_name = "manda-uploads"
+        video_url = "https://{0}.s3.{1}.amazonaws.com/{2}".format(
+            bucket_name,
+            config.AWS_DEFAULT_REGION,
+            lesson.video.path
+        )
+
+        lesson.video_url = video_url
+
+        return lesson
 
 
 # TODO business rules

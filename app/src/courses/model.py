@@ -27,6 +27,8 @@ class Course:
     def __post_init__(self):
         self.students: list[User] = []
 
+    # TODO add thumbnail
+
 
 def enroll_course(student: User, course: Course):
     course.students.append(student)
