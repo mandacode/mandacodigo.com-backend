@@ -1,20 +1,24 @@
 version: "3.8"
 
 services:
-  app:
+  backend:
     container_name: fastapi
     build:
       context: .
     ports:
       - "8000:8000"
     volumes:
-      - "./app/:/var/www/app"
+      - "./app/:/usr/src/app"
     env_file:
       - .env
-    command: bash -c "wait-for-it --service db:5432 --timeout=15 -- uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload"
+    command: [
+      './wait-for-it.sh', 'database:5432',
+      '--', 
+      'uvicorn', 'src.main:app', '--host', '0.0.0.0', '--port', '8000', '--reload'
+    ]
     restart: always
 
-  db:
+  database:
     container_name: postgres
     image: postgres:15
     environment:
