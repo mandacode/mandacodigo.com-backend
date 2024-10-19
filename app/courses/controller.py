@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi import status
 
 from .dto import (
@@ -87,6 +87,8 @@ def get_course_controller(
 ):
     service = GetCourseService(db=session)
     course = service.execute(course_id=course_id)
+    if course is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return course
 
 
@@ -94,15 +96,17 @@ def get_course_controller(
     path="/{course_id}/modules/{module_id}/lessons/{lesson_id}",
     response_model=LessonDTO
 )
-def get_course_controller(
+def get_lesson_controller(
         course_id: int,
         module_id: int,
         lesson_id: int,
         session: Session = Depends(get_session)
 ):
     service = GetLessonService(db=session)
-    course = service.execute(lesson_id=lesson_id)
-    return course
+    lesson = service.execute(lesson_id=lesson_id)
+    if lesson is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    return lesson
 
 
 # TODO add enrollment
